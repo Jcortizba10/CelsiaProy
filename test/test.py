@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from src.main import HuggingFaceModel, predict_with_model, process_file
+from src.main import HuggingFaceModel, predict_individual_text, process_file
 
 class TestHuggingFaceModel(unittest.TestCase):
     def setUp(self):
@@ -8,23 +8,18 @@ class TestHuggingFaceModel(unittest.TestCase):
         self.model = HuggingFaceModel()
 
     def test_predict_output(self):
-        """Prueba que la salida de predicción sea una lista con valores en el rango adecuado."""
-        text = "un arbol corto las cuerdas"
-        predictions = self.model.predict(text)
+        """Prueba que la salida de predicción sea una etiqueta válida."""
+        text = "un árbol cortó las cuerdas"
+        prediction = self.model.predict(text)
         
-        # Verificar que la predicción es una lista
-        self.assertIsInstance(predictions, list)
+        # Verificar que la predicción sea un string
+        self.assertIsInstance(prediction, str)
         
-        # Verificar que la lista tiene al menos un valor
-        self.assertGreater(len(predictions), 0)
-        
-        # Verificar que las probabilidades están en el rango [0, 1]
-        for prob in predictions[0]:
-            self.assertGreaterEqual(prob, 0)
-            self.assertLessEqual(prob, 1)
+        # Verificar que la predicción esté en las etiquetas válidas
+        self.assertIn(prediction, ["ejecutar", "cancelar"])
 
     def test_validate_input(self):
-        """Prueba que la función de validación maneje correctamente las entradas"""
+        """Prueba que la función de validación maneje correctamente las entradas."""
         
         # Casos válidos
         valid_texts = [
@@ -45,21 +40,16 @@ class TestHuggingFaceModel(unittest.TestCase):
             self.assertFalse(self.model.validate_input(text))
 
 class TestGradioInterface(unittest.TestCase):
-    def test_predict_with_model(self):
-        """Prueba que la función predict_with_model devuelva la salida correcta."""
-        input_text = "no hay energia en el sector"
-        predictions = predict_with_model(input_text)
+    def test_predict_individual_text(self):
+        """Prueba que la función predict_individual_text devuelva la salida correcta."""
+        input_text = "no hay energía en el sector"
+        prediction = predict_individual_text(input_text)
         
-        # Verificar que la predicción es una lista
-        self.assertIsInstance(predictions, list)
+        # Verificar que la predicción sea un string
+        self.assertIsInstance(prediction, str)
         
-        # Verificar que la lista tiene al menos un valor
-        self.assertGreater(len(predictions), 0)
-        
-        # Verificar que las probabilidades están en el rango [0, 1]
-        for prob in predictions[0]:
-            self.assertGreaterEqual(prob, 0)
-            self.assertLessEqual(prob, 1)
+        # Verificar que la predicción esté en las etiquetas válidas
+        self.assertIn(prediction, ["ejecutar", "cancelar"])
 
 class TestProcessFile(unittest.TestCase):
 
@@ -68,8 +58,8 @@ class TestProcessFile(unittest.TestCase):
         """Prueba para procesar correctamente el archivo CSV y generar las predicciones."""
         # Crear un DataFrame simulado
         mock_df = MagicMock()
-        mock_df.columns = ['texto']
-        mock_df['texto'] = ["Texto válido", "Otro texto"]
+        mock_df.columns = ['Descripción de la orden']
+        mock_df['Descripción de la orden'] = ["Texto válido", "Otro texto"]
         
         mock_read_csv.return_value = mock_df  # Simular que read_csv devuelve este DataFrame
         
@@ -84,7 +74,7 @@ class TestProcessFile(unittest.TestCase):
 
     @patch('pandas.read_csv')  # Mock de la función read_csv de pandas
     def test_process_file_no_text_column(self, mock_read_csv):
-        """Prueba que maneje el caso donde el archivo no tiene la columna 'texto'."""
+        """Prueba que maneje el caso donde el archivo no tiene la columna 'Descripción de la orden'."""
         mock_df = MagicMock()
         mock_df.columns = ['otra_columna']
         
@@ -93,7 +83,7 @@ class TestProcessFile(unittest.TestCase):
         message, output_file = process_file(MagicMock(name='file'))
         
         # Verificar que el mensaje de error se retorne
-        self.assertEqual(message, "Error: El archivo no tiene una columna llamada 'texto'.")
+        self.assertEqual(message, "Error: El archivo no tiene una columna llamada 'Descripción de la orden'.")
         self.assertIsNone(output_file)  # No debería generarse archivo si hay un error
 
     @patch('pandas.read_csv')  # Mock de la función read_csv de pandas

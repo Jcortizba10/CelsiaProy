@@ -51,14 +51,14 @@ def process_file(file):
         df = pd.read_csv(file.name, encoding=encoding)
         
         # Verificar si la columna para predecir existe
-        if 'texto' not in df.columns:
-            return "Error: El archivo no tiene una columna llamada 'texto'.", None
+        if 'Descripción de la orden' not in df.columns:
+            return "Error: El archivo no tiene una columna llamada 'Descripción de la orden'.", None
         
         # Instanciar el modelo
         model = HuggingFaceModel()
         
-        # Aplicar predicciones en la columna 'texto'
-        df['Predicción'] = df['texto'].apply(model.predict)
+        # Aplicar predicciones en la columna 'Descripción de la orden'
+        df['out'] = df['Descripción de la orden'].apply(model.predict)
         
         # Guardar el archivo con resultados
         output_file = "resultado_predicciones.csv"
