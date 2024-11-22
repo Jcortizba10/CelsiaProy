@@ -1,0 +1,17 @@
+# Ignorar archivos de Git y otros de control de versiones
+.git/
+.gitignore
+.github/
+
+# Ignorar carpetas de desarrollo y pruebas que no sean necesarias en producción
+tests/
+
+# Ignorar entornos virtuales
+venv/
+.env/
+
+# Ignorar archivos de Python compilados
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
