@@ -28,17 +28,16 @@ jobs:
 
     - name: Run unit tests
       run: python -m unittest discover -s . -p "test*.py"
-'''
-  build-docker:
-    runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+#  build-docker:
+#    runs-on: ubuntu-latest
 
-    - name: Build Docker image
-      run: docker build -t huggingface-model-app .
+#    steps:
+#    - name: Checkout code
+#      uses: actions/checkout@v4
 
-    - name: Run container
-      run: docker run huggingface-model-app
-'''
+#    - name: Build Docker image
+#      run: docker build -t huggingface-model-app .
+
+#   - name: Run container
+#      run: docker run huggingface-model-app
